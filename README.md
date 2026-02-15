@@ -27,8 +27,11 @@ https://Dhruv-Jain-2006.github.io/mood-indigo/
 ## 🛠️ Tech Stack
 
 -HTML5
+
 -Tailwind CSS (CDN)
+
 -Vanilla JavaScript
+
 -GitHub Pages for hosting
 
 Author: Dhruv Jain
