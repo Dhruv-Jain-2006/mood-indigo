@@ -34,4 +34,4 @@ https://Dhruv-Jain-2006.github.io/mood-indigo/
 
 -GitHub Pages for hosting
 
-Author: Dhruv Jain
+### Author: Dhruv Jain
