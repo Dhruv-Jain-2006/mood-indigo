@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mood Indigo</title>
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Custom colors -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        indigoDeep: "#1A1B3A",
+                        lavenderMist: "#A5A6F6",
+                        moonlight: "#F4F5FF",
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Navbar + link animations -->
+    <style>
+        .nav-link {
+            position: relative;
+            color: rgba(165,166,246,0.9);
+            transition: color 0.25s ease, opacity 0.25s ease;
+        }
+
+        .nav-link:hover {
+            color: #ffffff;
+        }
+
+        .nav-link::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: -4px;
+            width: 0%;
+            height: 1.5px;
+            background: #ffffff;
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .nav-link:active {
+            opacity: 0.6;
+        }
+
+        /* Mobile nav white */
+        #mobileMenu .nav-link {
+            color: #ffffff;
+        }
+
+        #mobileMenu .nav-link:hover {
+            color: #ffffff;
+        }
+
+        .mood-card {
+            position: relative;
+            height: 170px;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid transparent;
+            background: rgba(255,255,255,0.03);
+            transition: all 0.35s ease;
+        }
+
+        .mood-card:hover {
+            transform: scale(1.02);
+            border-color: rgba(165,166,246,0.4);
+        }
+
+        .mood-bg {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            opacity: 0.35;
+            transition: transform 0.6s ease;
+        }
+
+        .mood-card:hover .mood-bg {
+            transform: scale(1.05);
+        }
+
+        .mood-bg.peace { background-image: url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e"); }
+        .mood-bg.curiosity { background-image: url("https://images.unsplash.com/photo-1491553895911-0055eca6402d"); }
+        .mood-bg.wonder { background-image: url("https://images.unsplash.com/photo-1501785888041-af3ef285b470"); }
+        .mood-bg.adventure { background-image: url("https://images.unsplash.com/photo-1500530855697-b586d89ba3ee"); }
+
+        .mood-card::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: rgba(26,27,58,0.7);
+            backdrop-filter: blur(4px);
+        }
+
+        .mood-text {
+            position: relative;
+            z-index: 2;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 0 16px;
+        }
+
+        .mood-title {
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .mood-sub {
+            font-size: 12px;
+            color: rgba(165,166,246,0.85);
+            margin-top: 4px;
+        }
+
+        .mood-selected {
+            border-color: #A5A6F6;
+            transform: scale(1.03);
+            box-shadow: 0 0 25px rgba(165,166,246,0.35);
+        }
+
+        /* ===== COUNTRY CARDS ===== */
+        .country-card {
+            background: rgba(255,255,255,0.04);
+            border-radius: 18px;
+            overflow: hidden;
+            border: 1px solid transparent;
+            transition: all 0.35s ease;
+        }
+
+        .country-card:hover {
+            transform: translateY(-6px) scale(1.02);
+            border-color: rgba(165,166,246,0.4);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+        }
+
+        .country-img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            opacity: 0.85;
+        }
+
+        .country-text {
+            padding: 14px;
+            text-align: center;
+        }
+
+        .country-title {
+            display: block;
+            font-weight: 500;
+        }
+
+        .country-sub {
+            font-size: 12px;
+            color: rgba(165,166,246,0.8);
+            margin-top: 4px;
+        }
+
+        /* ===== ITINERARY CARDS ===== */
+
+        .itinerary-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(165,166,246,0.15);
+            border-radius: 14px;
+            padding: 14px 16px;
+            transition: all 0.25s ease;
+        }
+
+        .itinerary-card:hover {
+            border-color: rgba(165,166,246,0.35);
+            transform: translateY(-2px);
+        }
+
+        .itinerary-day {
+            font-size: 12px;
+            letter-spacing: 0.08em;
+            color: #A5A6F6;
+            margin-bottom: 4px;
+        }
+
+        .contact-input {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(165,166,246,0.15);
+            color: #F4F5FF;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.25s ease;
+        }
+
+
+        textarea.contact-input {
+            border-radius: 20px;
+        }
+
+        .contact-input::placeholder {
+            color: rgba(165,166,246,0.6);
+        }
+
+        .contact-input:focus {
+            border-color: rgba(165,166,246,0.6);
+            background: rgba(255,255,255,0.07);
+            box-shadow: 0 0 0 3px rgba(165,166,246,0.12);
+        }
+
+        .contact-btn {
+            padding: 12px 28px;
+            border-radius: 999px;
+            background: #A5A6F6;
+            color: #1A1B3A;
+            font-weight: 500;
+            transition: all 0.25s ease;
+        }
+
+        .contact-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(165,166,246,0.35);
+        }
+    </style>
+</head>
+
+<body class="bg-indigoDeep text-moonlight overflow-x-hidden">
+
+<!-- ================= NAVBAR ================= -->
+<header
+        id="navbar"
+        class="fixed top-0 left-0 w-full z-50 bg-transparent transition-all duration-500"
+>
+    <div class="w-full px-12 py-4 flex items-center justify-between">
+
+        <!-- Logo (left) -->
+        <a
+                href="#"
+                id="homeLink"
+                class="text-lg md:text-xl font-medium tracking-wide hover:opacity-80 transition"
+        >
+            Mood Indigo
+        </a>
+
+        <!-- Links (right) -->
+        <nav class="hidden md:flex items-center gap-10 text-sm text-lavenderMist/90">
+            <a href="#" id="homeNav" class="nav-link">HOME</a>
+            <a href="#planner" class="nav-link">PLAN YOUR JOURNEY</a>
+            <a href="#about" class="nav-link">ABOUT US</a>
+            <a href="#contact" class="nav-link">CONTACT</a>
+        </nav>
+
+        <!-- Mobile menu -->
+        <button id="menuBtn" class="md:hidden text-2xl">☰</button>
+    </div>
+
+    <!-- Mobile dropdown menu -->
+    <div
+            id="mobileMenu"
+            class="hidden md:hidden px-12 pb-6 text-sm text-lavenderMist/90 space-y-3"
+    >
+        <a href="#" id="homeNavMobile" class="block nav-link">HOME</a>
+        <a href="#planner" class="block nav-link">PLAN YOUR JOURNEY</a>
+        <a href="#about" class="block nav-link">ABOUT US</a>
+        <a href="#contact" class="block nav-link">CONTACT</a>
+    </div>
+</header>
+
+
+<!-- ================= HERO ================= -->
+<section id="hero" class="relative h-screen w-full overflow-hidden">
+
+    <!-- Background image -->
+    <img
+            id="heroBg"
+            src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1920&auto=format&fit=crop"
+            alt="Ocean"
+            class="absolute inset-0 w-full h-full object-cover scale-105 transition-transform duration-700"
+    />
+
+    <!-- Indigo overlay -->
+    <div class="absolute inset-0 bg-indigoDeep/70"></div>
+
+    <!-- Center text -->
+    <div
+            id="heroContent"
+            class="relative z-10 flex flex-col items-center justify-center
+             h-full text-center px-6
+             opacity-0 translate-y-10 transition-all duration-1000"
+    >
+        <h1 class="text-5xl md:text-6xl font-semibold tracking-tight">
+            Mood Indigo
+        </h1>
+
+        <p class="mt-4 max-w-md text-lg text-lavenderMist/90 leading-relaxed">
+            Travel that moves with your mood, not just the map.
+        </p>
+    </div>
+</section>
+
+<!-- ================= JOURNEY PLANNER ================= -->
+<section id="planner" class="relative bg-indigoDeep md:min-h-[200vh]">
+
+    <!-- Sticky container -->
+    <div class="md:sticky top-0 md:h-screen flex flex-col justify-start pt-16 md:pt-24 px-6 pb-16 md:pb-0">
+
+        <!-- ================= STEP 1: MOOD SELECTION ================= -->
+        <div class="max-w-4xl mx-auto text-center">
+
+            <!-- Heading wrapper (MUST exist initially) -->
+            <div id="plannerIntro">
+                <h2 class="text-3xl md:text-4xl font-semibold">
+                    Plan your Journey
+                </h2>
+
+                <p class="mt-3 text-lavenderMist/80">
+                    How are you feeling today?
+                </p>
+            </div>
+
+            <!-- Mood cards -->
+            <div id="moodGrid"
+                 class="grid grid-cols-2 md:grid-cols-4 gap-6 mt-32
+                  max-w-5xl mx-auto
+                  opacity-0 translate-y-8 transition-all duration-700">
+
+                <!-- Peace -->
+                <button class="mood-card" data-mood="peace">
+                    <div class="mood-bg peace"></div>
+                    <div class="mood-text">
+                        <span class="mood-title">Peace</span>
+                        <span class="mood-sub">Quiet, healing journeys</span>
+                    </div>
+                </button>
+
+                <!-- Curiosity -->
+                <button class="mood-card" data-mood="curiosity">
+                    <div class="mood-bg curiosity"></div>
+                    <div class="mood-text">
+                        <span class="mood-title">Curiosity</span>
+                        <span class="mood-sub">Gentle paths of discovery</span>
+                    </div>
+                </button>
+
+                <!-- Wonder -->
+                <button class="mood-card" data-mood="wonder">
+                    <div class="mood-bg wonder"></div>
+                    <div class="mood-text">
+                        <span class="mood-title">Wonder</span>
+                        <span class="mood-sub">Moments that feel larger than time</span>
+                    </div>
+                </button>
+
+                <!-- Adventure -->
+                <button class="mood-card" data-mood="adventure">
+                    <div class="mood-bg adventure"></div>
+                    <div class="mood-text">
+                        <span class="mood-title">Adventure</span>
+                        <span class="mood-sub">Bold steps into the unknown</span>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Continue button -->
+            <div id="continueWrap"
+                 class="mt-20 opacity-0 translate-y-6 transition-all duration-500">
+
+                <button id="continueBtn"
+                        class="px-10 py-3 rounded-full
+                       bg-lavenderMist text-indigoDeep font-medium
+                       hover:scale-[1.03] transition-all duration-300
+                       shadow-lg shadow-lavenderMist/20">
+                    Continue your journey
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= STEP 2: MEANING REVEAL ================= -->
+        <div id="meaningStep"
+             class="md:absolute md:inset-0 z-20
+             flex flex-col items-center
+             justify-start md:justify-center
+             pt-24 md:pt-0
+             text-center px-6
+             opacity-0 pointer-events-none
+             transition-all duration-700">
+
+            <h3 id="meaningTitle"
+                class="text-3xl md:text-4xl font-semibold">
+            </h3>
+
+            <p id="meaningText"
+               class="mt-4 max-w-xl text-lavenderMist/80 leading-relaxed">
+            </p>
+        </div>
+
+        <!-- ================= STEP 3: COUNTRY DISCOVERY ================= -->
+        <div id="countryStep"
+             class="md:absolute md:inset-0 z-20
+             flex flex-col items-center
+             justify-start md:justify-center
+             pt-24 md:pt-0
+             text-center px-6
+             opacity-0 pointer-events-none
+             transition-all duration-700">
+
+            <h3 class="text-3xl md:text-4xl font-semibold">
+                Places that match your feeling
+            </h3>
+
+            <p class="mt-3 text-lavenderMist/80">
+                Let the world reflect what you seek within.
+            </p>
+
+            <!-- Country cards -->
+            <div id="countryGrid"
+                 class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12
+                  max-w-5xl w-full">
+
+                <button class="country-card">
+                    <img src="https://images.unsplash.com/photo-1503104538136-7491acef4d5d?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                         class="country-img"/>
+                    <div class="country-text">
+                        <span class="country-title">Iceland</span>
+                        <span class="country-sub">Silent landscapes and endless skies</span>
+                    </div>
+                </button>
+
+                <button class="country-card">
+                    <img src="https://plus.unsplash.com/premium_photo-1666700698946-fbf7baa0134a?q=80&w=736&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                         class="country-img"/>
+                    <div class="country-text">
+                        <span class="country-title">Japan</span>
+                        <span class="country-sub">Still temples and drifting time</span>
+                    </div>
+                </button>
+
+                <button class="country-card">
+                    <img src="https://images.unsplash.com/photo-1501884742805-c94fc1d8985b?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                         class="country-img"/>
+                    <div class="country-text">
+                        <span class="country-title">New Zealand</span>
+                        <span class="country-sub">Wild paths and open horizons</span>
+                    </div>
+                </button>
+
+            </div>
+
+            <!-- ================= ITINERARY (STEP 4B) ================= -->
+            <div id="itineraryStep"
+                 class="mt-16 max-w-2xl w-full
+            opacity-0 translate-y-8
+            transition-all duration-500">
+
+                <h4 id="itineraryTitle" class="text-2xl font-semibold text-center"></h4>
+
+                <div id="itineraryDays" class="mt-8 space-y-4 text-left"></div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- ================= ABOUT ================= -->
+<section id="about" class="relative py-28 px-6 bg-[#F4F5FF] text-[#111327] overflow-hidden">
+
+    <div class="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-start">
+
+        <!-- LEFT: TEXT CONTENT -->
+        <div>
+
+            <!-- small label -->
+            <p class="text-xs tracking-widest text-indigoDeep/60 font-semibold">
+                ABOUT MOOD INDIGO
+            </p>
+
+            <!-- big headline -->
+            <h2 class="mt-4 text-4xl md:text-5xl font-semibold leading-tight">
+                Travel shaped by feeling,<br class="hidden md:block">
+                not just destination
+            </h2>
+
+            <!-- intro paragraph -->
+            <p class="mt-6 text-lg text-[#3A3D6B] max-w-xl leading-relaxed">
+                Mood Indigo is an emotion-first travel experience.
+                Instead of asking where you want to go, it listens to how you feel —
+                and gently designs journeys around stillness, curiosity, wonder,
+                or adventure.
+            </p>
+
+            <!-- mission -->
+            <h3 class="mt-12 text-sm font-semibold tracking-wide text-indigoDeep/70">
+                OUR PHILOSOPHY
+            </h3>
+
+            <p class="mt-4 text-[#3A3D6B] max-w-xl leading-relaxed">
+                Built around calm design and mindful pacing, Mood Indigo transforms
+                travel planning into reflection. Each recommendation is chosen not for
+                popularity, but for the emotion it creates — helping you return with
+                clarity, presence, and memories that stay.
+            </p>
+
+            <!-- divider -->
+            <div class="mt-12 h-px w-full bg-indigoDeep/10"></div>
+
+            <!-- numbers -->
+            <div class="mt-12 grid grid-cols-2 gap-10 max-w-lg">
+
+                <div>
+                    <p class="text-4xl font-semibold">4</p>
+                    <p class="text-sm text-indigoDeep/60 mt-2">
+                        emotional journey paths
+                    </p>
+                </div>
+
+                <div>
+                    <p class="text-4xl font-semibold">3</p>
+                    <p class="text-sm text-indigoDeep/60 mt-2">
+                        curated days per trip
+                    </p>
+                </div>
+
+                <div>
+                    <p class="text-4xl font-semibold">100%</p>
+                    <p class="text-sm text-indigoDeep/60 mt-2">
+                        slow, mindful pacing
+                    </p>
+                </div>
+
+                <div>
+                    <p class="text-4xl font-semibold">∞</p>
+                    <p class="text-sm text-indigoDeep/60 mt-2">
+                        moments that stay
+                    </p>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- RIGHT: IMAGE COLLAGE -->
+        <div class="relative grid grid-cols-2 gap-6">
+
+            <img
+                    src="https://images.unsplash.com/photo-1503104538136-7491acef4d5d?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                    class="rounded-2xl object-cover w-full h-56"
+            />
+
+            <img
+                    src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee"
+                    class="rounded-2xl object-cover w-full h-72 mt-10"
+            />
+
+            <img
+                    src="https://plus.unsplash.com/premium_photo-1666700698946-fbf7baa0134a?q=80&w=736&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                    class="rounded-2xl object-cover w-full h-72 -mt-10"
+            />
+
+            <img
+                    src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e"
+                    class="rounded-2xl object-cover w-full h-56"
+            />
+
+        </div>
+
+    </div>
+</section>
+
+<!-- ================= CONTACT ================= -->
+<section id="contact" class="bg-[#141538] py-24">
+
+    <div class="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-16 items-start">
+
+        <!-- Left content -->
+        <div>
+            <h2 class="text-4xl md:text-5xl font-semibold leading-tight">
+                Begin your next<br>journey with us.
+            </h2>
+
+            <p class="mt-6 text-lavenderMist/80 leading-relaxed max-w-md">
+                Whether you seek stillness, wonder, or quiet discovery,
+                share a few words with us.
+                We’ll gently guide the path ahead.
+            </p>
+
+            <!-- Contact info -->
+            <div class="mt-10 space-y-4 text-sm text-lavenderMist/70">
+
+                <p>📍 Bengaluru, Karnataka</p>
+                <p>📞 +91 98867 18750</p>
+                <p>✉️ dhruvjain.677@gmail.com</p>
+
+            </div>
+        </div>
+
+
+        <!-- Right form -->
+        <form id="contactForm" class="space-y-6">
+
+            <!-- Name row -->
+            <div class="grid grid-cols-2 gap-4">
+                <input type="text" placeholder="First name" class="contact-input">
+                <input type="text" placeholder="Last name" class="contact-input">
+            </div>
+
+            <!-- Email -->
+            <input type="email" placeholder="Email address" class="contact-input">
+
+            <!-- Phone -->
+            <input type="tel" placeholder="Phone number" class="contact-input">
+
+            <!-- Message -->
+            <textarea rows="5" placeholder="Write your thoughts..."
+                      class="contact-input resize-none"></textarea>
+
+            <!-- Button -->
+            <button type="submit" class="contact-btn">
+                Send message
+            </button>
+            <p id="contactSuccess"
+               class="text-green-400 text-sm mt-4 opacity-0 transition-opacity duration-700">
+                Message sent successfully!
+            </p>
+
+        </form>
+
+    </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer class="bg-gradient-to-b from-[#14152B] to-[#05060B] text-moonlight border-t border-white/10">
+    <!-- ===== CTA ===== -->
+    <div class="max-w-4xl mx-auto text-center px-6 pt-24 pb-16">
+        <p class="text-xs tracking-widest text-lavenderMist/70 uppercase">
+            Begin your journey
+        </p>
+
+        <h2 class="mt-4 text-4xl md:text-5xl font-semibold leading-tight">
+            Ready to travel?
+        </h2>
+
+        <p class="mt-4 text-lavenderMist/80 max-w-xl mx-auto">
+            Let Mood Indigo guide you toward places that match your inner rhythm,
+            not just your destination.
+        </p>
+
+        <button
+                onclick="document.querySelector('#planner')?.scrollIntoView({behavior:'smooth'})"
+                class="mt-8 px-8 py-3 rounded-full
+             bg-lavenderMist text-indigoDeep font-medium
+             hover:scale-105 transition-all duration-300
+             shadow-lg shadow-lavenderMist/20"
+        >
+            Start Planning
+        </button>
+    </div>
+
+    <!-- divider -->
+    <div class="border-t border-white/10"></div>
+    <!-- ===== LINKS GRID ===== -->
+    <div class="max-w-6xl mx-auto px-6 py-16 grid gap-12 md:grid-cols-4">
+
+        <!-- Logo / description -->
+        <div>
+            <div class="text-2xl font-semibold tracking-wide">Mood Indigo</div>
+
+            <p class="mt-4 text-sm text-lavenderMist/70 leading-relaxed">
+                A quiet travel companion that shapes journeys around emotion,
+                stillness, curiosity, wonder, and adventure.
+            </p>
+        </div>
+
+        <!-- Explore -->
+        <div>
+            <h3 class="text-sm tracking-wider text-lavenderMist/70 uppercase">
+                Explore
+            </h3>
+
+            <ul class="mt-4 space-y-3 text-sm">
+                <li><a href="#planner" class="hover:text-white transition">Plan Journey</a></li>
+                <li><a href="#about" class="hover:text-white transition">About</a></li>
+                <li><a href="#contact" class="hover:text-white transition">Contact</a></li>
+            </ul>
+        </div>
+
+        <!-- Experience -->
+        <div>
+            <h3 class="text-sm tracking-wider text-lavenderMist/70 uppercase">
+                Experience
+            </h3>
+
+            <ul class="mt-4 space-y-3 text-sm">
+                <li><span class="text-white">Emotion-first travel</span></li>
+                <li><span class="text-white">Mindful pacing</span></li>
+                <li><span class="text-white">Lasting memories</span></li>
+            </ul>
+        </div>
+
+        <!-- Social -->
+        <div>
+            <h3 class="text-sm tracking-wider text-lavenderMist/70 uppercase">
+                Connect
+            </h3>
+
+            <ul class="mt-4 space-y-3 text-sm">
+                <li><a href="https://www.instagram.com/dhruvjain_2208/" target="_blank" class="hover:text-white transition">Instagram</a></li>
+                <li><a href="https://www.linkedin.com/in/dhruv-jain-772b96322/" target="_blank" class="hover:text-white transition">LinkedIn</a></li>
+                <li><a href="https://github.com/Dhruv-Jain-2006" target="_blank" class="hover:text-white transition">GitHub</a></li>
+            </ul>
+        </div>
+
+    </div>
+
+    <!-- divider -->
+    <div class="border-t border-white/10"></div>
+    <!-- ===== BOTTOM BAR ===== -->
+    <div class="max-w-6xl mx-auto px-6 py-6 flex flex-col md:flex-row
+              items-center justify-between gap-4 text-sm text-lavenderMist/60">
+
+        <p>© 2026 Mood Indigo. All rights reserved.</p>
+
+        <div class="flex items-center gap-6">
+            <a href="#" class="hover:text-white transition">Privacy</a>
+            <a href="#" class="hover:text-white transition">Terms</a>
+        </div>
+    </div>
+</footer>
+
+
+<script src="script.js"></script>
+</body>
+</html>
